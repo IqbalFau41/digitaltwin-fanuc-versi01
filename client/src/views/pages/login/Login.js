@@ -1,0 +1,119 @@
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import axios from 'axios'
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CCardGroup,
+  CCol,
+  CContainer,
+  CForm,
+  CFormInput,
+  CInputGroup,
+  CInputGroupText,
+  CRow,
+} from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { cilLockLocked, cilUser } from '@coreui/icons'
+
+const Login = () => {
+  const [data, setData] = useState({ email: '', password: '' })
+  const [error, setError] = useState('')
+
+  const handleChange = ({ currentTarget: input }) => {
+    setData({ ...data, [input.name]: input.value })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      const url = 'http://localhost:8080/api/auth'
+      const { data: res } = await axios.post(url, data)
+      localStorage.setItem('token', res.data)
+      window.location = '/' // Redirect to home or dashboard
+    } catch (error) {
+      if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+        setError(error.response.data.message)
+      }
+    }
+  }
+
+  return (
+    <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
+      <CContainer>
+        <CRow className="justify-content-center">
+          <CCol md={8}>
+            <CCardGroup>
+              <CCard className="p-4">
+                <CCardBody>
+                  <CForm onSubmit={handleSubmit}>
+                    <h1>Login</h1>
+                    <p className="text-medium-emphasis">Sign In to your account</p>
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText>
+                        <CIcon icon={cilUser} />
+                      </CInputGroupText>
+                      <CFormInput
+                        type="email"
+                        placeholder="Email"
+                        name="email"
+                        onChange={handleChange}
+                        value={data.email}
+                        required
+                      />
+                    </CInputGroup>
+                    <CInputGroup className="mb-4">
+                      <CInputGroupText>
+                        <CIcon icon={cilLockLocked} />
+                      </CInputGroupText>
+                      <CFormInput
+                        type="password"
+                        placeholder="Password"
+                        name="password"
+                        onChange={handleChange}
+                        value={data.password}
+                        required
+                      />
+                    </CInputGroup>
+                    {error && <div>{error}</div>}
+                    <CRow>
+                      <CCol xs={6}>
+                        <CButton type="submit" color="primary" className="px-4">
+                          Login
+                        </CButton>
+                      </CCol>
+                      <CCol xs={6} className="text-right">
+                        <Link to="/register">
+                          <CButton color="link" className="px-0">
+                            Register Now!
+                          </CButton>
+                        </Link>
+                      </CCol>
+                    </CRow>
+                  </CForm>
+                </CCardBody>
+              </CCard>
+              <CCard className="text-white bg-primary py-5">
+                <CCardBody className="text-center">
+                  <div>
+                    <h2>Tugas Akhir</h2>
+                    <p>Iqbal Fauzan | 218441034 D4 - Teknologi Rekayasa Otomasi 2021</p>
+                    <p>
+                      Rancang Bangun Sistem Digital Twin Berbasis Industrial Internet of Things pada
+                      Mesin Injeksi Molding
+                    </p>
+                    <p>PT. Biggy Cemerlang</p>
+                  </div>
+                </CCardBody>
+              </CCard>
+            </CCardGroup>
+          </CCol>
+        </CRow>
+      </CContainer>
+    </div>
+  )
+}
+
+export default Login
